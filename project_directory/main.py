@@ -67,11 +67,11 @@ def start_the_game(actual_word_character_list, actual_word):
             if (item in actual_word_character_list) and (actual_word_character_list[index] != item):
                 print(f"{item} is in the word but not at the correct sport") 
                 continue
-            
-            
+        
         attempts = attempts + 1 
-    
-    
+     
+            
+    # Failed to guess the word correctly 
     if(attempts == 7):
         print(f"You were not able to guess the word correctly. It was : {actual_word}")
         
