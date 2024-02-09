@@ -116,6 +116,10 @@ def start_the_game(actual_word_character_list, actual_word):
 #                      My code for the 1st E itself should show that "E has already been guessed and is not in the word anymore"
 #                      So that there is no confusion if there are repeated letters in the actual word
 
+
+# TODO - Add functionality to check if the user input is a valid 5 letter word from the dictionary
+
+
 if __name__ == "__main__":
     actual_word = get_the_words()
     actual_word = actual_word.lower().strip().rstrip(".")
