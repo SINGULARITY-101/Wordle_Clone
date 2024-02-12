@@ -1,9 +1,12 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from colorama import Fore
+
 
 result_to_print = ["", "", "", "", ""]
-correctly_guessed_letters = ["_ ", "_ ", "_ ", "_ ", "_ "]
+guess_list = []
+
 
 
 # Getting the API Key set in the environment variable 
@@ -41,7 +44,7 @@ def start_the_game(secret_word, secret_word_list):
     while (attempts<=6):
         while(True):
             print("Enter your guess")
-            guess = input()
+            guess = input().upper()
 
             if (len(guess)) != 5:
                 print("Invalid Input! Please enter a 5 letter word\n")
@@ -50,19 +53,17 @@ def start_the_game(secret_word, secret_word_list):
                 break
         
         output = wordle_logic(guess, secret_word, secret_word_list)
-        attempts = attempts + 1
+        if output == 1:
+            print("Congratulations! You guessed the word correctly")
+            break
+        else:
+            attempts = attempts + 1
+            continue
+    
+    if attempts > 6:
+        print(f"Sorry! You failed to guess the word correctly. The actual word was : {secret_word}")
     
 
-
-
-# Function to grey out correctly placed letters in the secret word list 
-def correct_letters(guessed_word_list, secret_word_list):
-    for i in range(len(guessed_word_list)):
-        letter = guessed_word_list[i]
-        if letter == secret_word_list[i]:
-            secret_word_list[i] = "*"
-    
-    return secret_word_list
 
 
 
@@ -73,10 +74,66 @@ def wordle_logic(guess, secret_word, secret_word_list):
     if guess == secret_word:
         return 1
     
-    else:
+    else:        
         guessed_word_list = [*guess]
-        secret_word_list = correct_letters(guessed_word_list, secret_word_list)
-        print(secret_word_list)
+        secret_word_list_copy = [*secret_word_list]
+        
+        #Finding the correctly placed letters 
+        for i in range(len(guessed_word_list)):
+            letter = guessed_word_list[i]
+            if letter == secret_word_list_copy[i]:
+                secret_word_list_copy[i] = "*"
+                result_to_print[i] = letter + " at correct position"
+            else:
+                continue
+        
+ 
+        #Doing a pass for the letters that are in the word but not at the correct position
+        for i in range(len(guessed_word_list)):
+            letter = guessed_word_list[i]
+            if letter in secret_word_list_copy and secret_word_list_copy[i] != "*":
+                result_to_print[i] = letter + " in the word but not at the correct position"
+            
+            elif secret_word_list_copy[i] == "*":
+                continue
+            
+            else:
+                result_to_print[i] = letter + " not in the word"
+        
+
+
+        display_results()
+        for item in guess_list:
+            print(item)
+        
+        print("\n")    
+        return 0
+
+
+
+
+
+#Function to display results after every guess 
+def display_results():
+    result_with_color = []
+    
+    for item in result_to_print:
+        letter = item[0]
+        if " at correct position" in item:
+            color = Fore.GREEN
+        
+        elif " in the word but not at the correct position" in item:
+            color = Fore.YELLOW
+            
+        else:
+            color = Fore.WHITE
+        
+        colored_letter = color + letter + Fore.RESET
+        result_with_color.append(colored_letter)
+    
+    guess_list.append(" ".join(result_with_color))
+        
+            
 
 
 
@@ -84,7 +141,7 @@ def wordle_logic(guess, secret_word, secret_word_list):
 
 
 if __name__ == "__main__":
-    secret_word = get_the_word().lower().strip().rstrip(".")
+    secret_word = get_the_word().upper().strip().rstrip(".")
     print(secret_word)
     secret_word_list = [*secret_word]
     
